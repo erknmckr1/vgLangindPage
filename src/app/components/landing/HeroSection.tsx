@@ -40,7 +40,7 @@ return (
         </motion.p>
 
         <motion.a
-          href="#features"
+          href="/signup"
           className="mt-8 inline-block btn-primary px-6 py-3 rounded-xl text-lg font-medium"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
