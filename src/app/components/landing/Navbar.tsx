@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import UseTheme from "./ui/UseTheme";
+import UseTheme from "../ui/UseTheme";
 import { Moon, Sun } from "lucide-react";
 
 export default function Navbar() {
@@ -18,8 +18,8 @@ export default function Navbar() {
       <nav className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
         {/* Logo */}
         <Link
-          href="#hero"
-          className="text-2xl font-extrabold text-primary tracking-tight"
+          href="/"
+          className="text-2xl font-extrabold text-primary  tracking-tight"
         >
           Vega
         </Link>
@@ -46,8 +46,8 @@ export default function Navbar() {
         {/* CTA + Dark Mode */}
         <div className="flex items-center gap-4">
           <a
-            href="#hero"
-            className="hidden md:inline-block btn-primary px-4 py-2 rounded-xl"
+            href="/signup"
+            className="hidden md:inline-block px-4 py-2 rounded-xl bg-primary text-primary-foreground"
           >
             Ücretsiz Başla
           </a>

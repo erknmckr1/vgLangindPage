@@ -5,7 +5,7 @@ import { useState } from "react";
 import "swiper/css";
 import Image from "next/image";
 import { Autoplay } from "swiper/modules";
-import FadeInSection from "../ui/FadeInSection";
+import FadeInSection from "../../ui/FadeInSection";
 import ImageModalWithSwiper from "./ImageCarouselModal";
 export default function TemplateCarousel() {
   const themeImages = ["image1", "image2", "image3", "image4", "image5"];

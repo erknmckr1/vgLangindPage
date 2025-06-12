@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { SendHorizonal } from "lucide-react";
-import FadeInSection from "./ui/FadeInSection";
+import FadeInSection from "../ui/FadeInSection";
 export default function ContactForm() {
   const [formData, setFormData] = useState({
     name: "",

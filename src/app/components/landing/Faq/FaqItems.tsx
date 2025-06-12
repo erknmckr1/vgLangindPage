@@ -1,7 +1,7 @@
 "use client";
 import { motion, AnimatePresence } from "motion/react";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import FadeInSection from "../ui/FadeInSection";
+import FadeInSection from "../../ui/FadeInSection";
 interface FaqItemProps {
   question: string;
   answer: string;

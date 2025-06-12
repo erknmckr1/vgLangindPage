@@ -1,0 +1,78 @@
+"use client";
+import Step2_StoreDetails from "./steps/Step2_StoreDetails";
+import { useState } from "react";
+import Step1_ProfileType from "./steps/Step1_ProfileType";
+import Step3_ProductType from "./steps/Step3_ProductType";
+import Step4_ThemeSelection from "./steps/Step4_ThemeCollection";
+const steps = [
+  { id: 1, title: "Profil Tipi", component: Step1_ProfileType },
+  { id: 2, title: "Mağaza Bilgileri", component: Step2_StoreDetails },
+  { id: 3, title: "Ürün Türleri", component: Step3_ProductType },
+   { id: 3, title: "Kolay Temalar", component: Step4_ThemeSelection },
+];
+
+export default function OnboardingStepManager() {
+  const [currentStep, setCurrentStep] = useState(0);
+  const StepComponent = steps[currentStep].component;
+  const totalSteps = steps.length;
+  const progress = ((currentStep + 1) / totalSteps) * 100;
+
+  const handleNext = () => {
+    if (currentStep < totalSteps - 1) {
+      setCurrentStep((prev) => prev + 1);
+    }
+  };
+
+  const handleBack = () => {
+    if (currentStep > 0) {
+      setCurrentStep((prev) => prev - 1);
+    }
+  };
+
+  return (
+    <section className="w-full max-w-2xl mx-auto min-h-[calc(100vh-73px)]  py-12 px-6 flex flex-col justify-between">
+      {/* PROGRESS BAR */}
+      <div className="mb-6">
+        <div className="w-full bg-muted h-2 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-primary transition-all duration-300"
+            style={{ width: `${progress}%` }}
+          ></div>
+        </div>
+        <p className="text-right text-xs text-muted-foreground mt-1">
+          {Math.round(progress)}% tamamlandı
+        </p>
+      </div>
+
+      {/* STEP HEADER */}
+      <header className="mb-6 text-center">
+        <h1 className="text-xl font-bold text-foreground">
+          {steps[currentStep].title}
+        </h1>
+      </header>
+
+      {/* ACTIVE STEP */}
+      <div className="mb-6">
+        <StepComponent />
+      </div>
+
+      {/* STEP CONTROLS */}
+      <div className="flex justify-between">
+        <button
+          onClick={handleBack}
+          disabled={currentStep === 0}
+          className="px-4 py-2 bg-muted rounded disabled:opacity-40"
+        >
+          Geri
+        </button>
+        <button
+          onClick={handleNext}
+          disabled={currentStep === totalSteps - 1}
+          className="px-4 py-2 bg-primary text-primary-foreground rounded"
+        >
+          İleri
+        </button>
+      </div>
+    </section>
+  );
+}

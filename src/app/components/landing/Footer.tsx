@@ -1,4 +1,4 @@
-import FadeInSection from "./ui/FadeInSection";
+import FadeInSection from "../ui/FadeInSection";
 
 export default function Footer() {
   return (

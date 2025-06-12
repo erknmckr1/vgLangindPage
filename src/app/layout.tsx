@@ -1,6 +1,6 @@
 import "./globals.css";
 import { ReactNode } from "react";
-import Navbar from "./components/Navbar";
+import Navbar from "./components/landing/Navbar";
 import { cookies } from "next/headers";
 import Head from "next/head";
 
