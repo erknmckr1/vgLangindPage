@@ -50,7 +50,7 @@ export default function Step1_ProfileType() {
             key={option.id}
             onClick={() => setSelected(option.id)}
             className={cn(
-              "border text-left rounded p-4 hover:bg-accent transition flex items-start gap-3",
+              "border relative text-left rounded p-4 hover:bg-accent transition flex items-start gap-3",
               selected === option.id && "border-primary bg-muted/70"
             )}
           >
@@ -62,7 +62,7 @@ export default function Step1_ProfileType() {
                 {option.description}
               </div>
             </div>
-            {selected === option.id && <CheckCircle2 className="text-primary mt-1" size={20} />}
+            {selected === option.id && <CheckCircle2 className="absolute bg-muted top-2 right-2 text-primary mt-1" size={20} />}
           </button>
         ))}
       </div>

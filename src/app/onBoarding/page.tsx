@@ -4,11 +4,18 @@ import { useState } from "react";
 import Step1_ProfileType from "./steps/Step1_ProfileType";
 import Step3_ProductType from "./steps/Step3_ProductType";
 import Step4_ThemeSelection from "./steps/Step4_ThemeCollection";
+import Step5_AccountTypeSelection from "./steps/Step5_AccountTypeSelection";
+import Step6_PaymentSetting from "./steps/Step6_PaymentSetting";
+import Step7_Preview from "./steps/Step7_Preview";
 const steps = [
+  { id: 5, title: "Hesap Türü Seçimi", component: Step5_AccountTypeSelection },
   { id: 1, title: "Profil Tipi", component: Step1_ProfileType },
   { id: 2, title: "Mağaza Bilgileri", component: Step2_StoreDetails },
   { id: 3, title: "Ürün Türleri", component: Step3_ProductType },
-   { id: 3, title: "Kolay Temalar", component: Step4_ThemeSelection },
+  { id: 4, title: "Kolay Temalar", component: Step4_ThemeSelection },
+  { id: 6, title: "Ödeme ve Fatura Bilgileri", component: Step6_PaymentSetting },
+   { id: 7, title: "Ödeme ve Fatura Bilgileri", component: Step7_Preview },
+  
 ];
 
 export default function OnboardingStepManager() {
