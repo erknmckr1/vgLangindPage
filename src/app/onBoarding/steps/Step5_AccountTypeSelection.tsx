@@ -1,8 +1,9 @@
-'use client';
-import { useState } from "react";
+"use client";
 import { CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/lib/redux/store";
+import { setField } from "@/lib/redux/slices/onBoarding.Slice";
 const accountTypes = [
   {
     id: "individual",
@@ -18,15 +19,16 @@ const accountTypes = [
   },
 ];
 
+export default function Step5_AccountTypeSelection() {
+  const dispatch = useDispatch();
+  const { accountType } = useSelector((state: RootState) => state.onBoarding);
 
-export default function Step5_AccountTypeSelection(){
-    const [selectedAccountType,setSelectedAccountType] = useState<string | null>(null);
-
-   return (
+  return (
     <div className="space-y-4">
       <h2 className="text-2xl font-semibold">Hesap Tipinizi Seçin</h2>
       <p className="text-muted-foreground">
-        Ödeme altyapınızı yapılandırabilmemiz için size uygun hesap tipini belirtin.
+        Ödeme altyapınızı yapılandırabilmemiz için size uygun hesap tipini
+        belirtin.
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
@@ -34,10 +36,12 @@ export default function Step5_AccountTypeSelection(){
           <button
             key={type.id}
             type="button"
-            onClick={() => setSelectedAccountType(type.id)}
+            onClick={() =>
+              dispatch(setField({ key: "accountType", value: type.id }))
+            }
             className={cn(
               "border relative text-left rounded p-4 hover:bg-accent transition flex items-start gap-3",
-              selectedAccountType === type.id && "border-primary bg-muted/70"
+              accountType === type.id && "border-primary bg-muted/70"
             )}
           >
             <div className="flex-1">
@@ -48,8 +52,8 @@ export default function Step5_AccountTypeSelection(){
                 {type.description}
               </div>
             </div>
-            {selectedAccountType === type.id && (
-               <CheckCircle2 className="absolute top-2 right-2 text-primary bg-muted rounded-rounded" />
+            {accountType === type.id && (
+              <CheckCircle2 className="absolute top-2 right-2 text-primary bg-muted rounded-rounded" />
             )}
           </button>
         ))}

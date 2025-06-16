@@ -1,3 +1,4 @@
+'use client'
 import FeaturesCard from "./FeaturedCard";
 import { RocketIcon, ShieldCheckIcon, TrendingUpIcon } from "lucide-react";
 

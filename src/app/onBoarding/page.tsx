@@ -7,20 +7,31 @@ import Step4_ThemeSelection from "./steps/Step4_ThemeCollection";
 import Step5_AccountTypeSelection from "./steps/Step5_AccountTypeSelection";
 import Step6_PaymentSetting from "./steps/Step6_PaymentSetting";
 import Step7_Preview from "./steps/Step7_Preview";
+import { useStepValidation } from "./useStepValidation";
+import { onboardingSteps } from "./onboardingStepConfig";
+
 const steps = [
-  { id: 5, title: "Hesap Türü Seçimi", component: Step5_AccountTypeSelection },
-  { id: 1, title: "Profil Tipi", component: Step1_ProfileType },
-  { id: 2, title: "Mağaza Bilgileri", component: Step2_StoreDetails },
-  { id: 3, title: "Ürün Türleri", component: Step3_ProductType },
-  { id: 4, title: "Kolay Temalar", component: Step4_ThemeSelection },
-  { id: 6, title: "Ödeme ve Fatura Bilgileri", component: Step6_PaymentSetting },
-   { id: 7, title: "Ödeme ve Fatura Bilgileri", component: Step7_Preview },
-  
+  { id: 1, title: "Hesap Türü Seçimi", component: Step5_AccountTypeSelection },
+  { id: 2, title: "Profil Tipi", component: Step1_ProfileType },
+  { id: 3, title: "Mağaza Bilgileri", component: Step2_StoreDetails },
+  { id: 4, title: "Ürün Türleri", component: Step3_ProductType },
+  { id: 5, title: "Kolay Temalar", component: Step4_ThemeSelection },
+  {
+    id: 6,
+    title: "Ödeme ve Fatura Bilgileri",
+    component: Step6_PaymentSetting,
+  },
+  { id: 7, title: "Ödeme ve Fatura Bilgileri", component: Step7_Preview },
 ];
 
 export default function OnboardingStepManager() {
   const [currentStep, setCurrentStep] = useState(0);
   const StepComponent = steps[currentStep].component;
+  const isStepValid = useStepValidation(currentStep);
+  const currentStepMetadata = onboardingSteps.find(
+    (s) => s.id === steps[currentStep].id
+  );
+  if (!currentStepMetadata) return null; // veya default değer
   const totalSteps = steps.length;
   const progress = ((currentStep + 1) / totalSteps) * 100;
 
@@ -60,7 +71,7 @@ export default function OnboardingStepManager() {
 
       {/* ACTIVE STEP */}
       <div className="mb-6">
-        <StepComponent />
+        <StepComponent currentStepMetadata={currentStepMetadata} />
       </div>
 
       {/* STEP CONTROLS */}
@@ -72,13 +83,21 @@ export default function OnboardingStepManager() {
         >
           Geri
         </button>
-        <button
-          onClick={handleNext}
-          disabled={currentStep === totalSteps - 1}
-          className="px-4 py-2 bg-primary text-primary-foreground rounded"
-        >
-          İleri
-        </button>
+        {isStepValid || currentStepMetadata.skippable ? (
+          <button
+            onClick={handleNext}
+            className="px-4 py-2 bg-primary text-primary-foreground rounded"
+          >
+            İleri
+          </button>
+        ) : (
+          <button
+            disabled
+            className="px-4 py-2 bg-muted text-muted-foreground rounded opacity-50"
+          >
+            İleri
+          </button>
+        )}
       </div>
     </section>
   );

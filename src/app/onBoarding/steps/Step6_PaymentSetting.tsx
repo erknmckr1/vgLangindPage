@@ -1,30 +1,24 @@
+'"use client";';
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { setField } from "@/lib/redux/slices/onBoarding.Slice";
+import { RootState } from "@/lib/redux/store";
+import type { OnboardingState } from "@/lib/redux/slices/onBoarding.Slice";
+import { StepProps } from "@/app/types/onboardingPageTypes";
+export default function Step6_PaymentSetting({currentStepMetadata}:StepProps) {
+  const dispatch = useDispatch();
+  const { taxId, bankName, iban, invoiceTitle } = useSelector(
+    (state: RootState) => state.onBoarding
+  );
 
-type PaymentSettingProps = {
-  invoiceTitle: string;
-  iban: string;
-  bankName: string;
-  taxId: string;
-  isCompany: boolean;
+const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  dispatch(setField({
+    key: e.target.name as keyof OnboardingState,
+    value: e.target.value,
+  }));
 };
 
-export default function Step6_PaymentSetting() {
-  const [paymentSetting, setPaymentSetting] = useState<PaymentSettingProps>({
-    invoiceTitle: "", // ileride step5'ten alınacak
-    iban: "",
-    bankName: "",
-    taxId: "",
-    isCompany: false, // ileride step5'ten alınacak
-  });
-
-  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPaymentSetting((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
-  };
 
   const inputFields = [
     {
@@ -33,43 +27,31 @@ export default function Step6_PaymentSetting() {
       title: "Fatura Başlığı",
       placeholder: "Firma Adı ya da Ad Soyad",
       type: "text",
-      value: paymentSetting.invoiceTitle,
-      onChange: handleFormChange,
-      className: "py-3 mt-1",
-      required: true,
+      value: invoiceTitle,
     },
     {
       id: 1,
       name: "iban",
       title: "IBAN",
-      type: "text",
       placeholder: "TR00 0000 0000 0000 0000 0000 00",
-      value: paymentSetting.iban,
-      onChange: handleFormChange,
-      className: "py-3 mt-1",
-      required: true,
+      type: "text",
+      value: iban,
     },
     {
       id: 2,
       name: "bankName",
       title: "Banka Adı",
-      type: "text",
       placeholder: "Örn: Ziraat Bankası",
-      value: paymentSetting.bankName,
-      onChange: handleFormChange,
-      className: "py-3 mt-1",
-      required: true,
+      type: "text",
+      value: bankName,
     },
     {
       id: 3,
       name: "taxId",
       title: "Vergi No / TCKN",
-      type: "text",
       placeholder: "Vergi Kimlik No",
-      value: paymentSetting.taxId,
-      onChange: handleFormChange,
-      className: "py-3 mt-1",
-      required: true,
+      type: "text",
+      value: taxId,
     },
   ];
 
@@ -88,9 +70,9 @@ export default function Step6_PaymentSetting() {
               type={field.type}
               placeholder={field.placeholder}
               value={field.value}
-              onChange={field.onChange}
-              className={field.className}
-              required={field.required}
+              onChange={handleFormChange}
+              className="py-3 mt-1"
+              required
             />
           </div>
         ))}
@@ -98,9 +80,9 @@ export default function Step6_PaymentSetting() {
       <p className="text-sm text-muted-foreground">
         Bu bilgiler, ödeme işlemleri ve faturalandırma için kullanılacaktır.
       </p>
-      <p className="text-sm text-muted-foreground text-right underline hover:text-primary cursor-pointer">
-        Bu adımı daha sonra tamamla...
-      </p>
+      {currentStepMetadata && <p className="text-sm text-muted-foreground text-right underline hover:text-primary cursor-pointer">
+        Bu adımı daha sonra tamamlamak için ileri butonuna basabilirsiniz.
+      </p>}
     </div>
   );
 }

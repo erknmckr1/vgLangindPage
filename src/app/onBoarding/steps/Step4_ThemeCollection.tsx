@@ -5,6 +5,10 @@ import { useState } from "react";
 import { CheckCircle2, ZoomInIcon } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/lib/redux/store";
+import { setField } from "@/lib/redux/slices/onBoarding.Slice";
+import { StepProps } from "@/app/types/onboardingPageTypes";
 
 const themes = [
   {
@@ -34,10 +38,13 @@ const themes = [
   },
 ];
 
-export default function Step4_ThemeSelection() {
-  const [selected, setSelected] = useState<string | null>(null);
+export default function Step4_ThemeSelection({currentStepMetadata}:StepProps) {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
-
+  const dispatch = useDispatch();
+  const { theme } = useSelector((state: RootState) => state.onBoarding);
+  const handleSelectedTheme = (themeId: string) => {
+    dispatch(setField({ key: "theme", value: themeId }));
+  };
   return (
     <div className="space-y-4">
       <h2 className="text-2xl font-semibold">Tema Seçimi</h2>
@@ -46,32 +53,32 @@ export default function Step4_ThemeSelection() {
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
-        {themes.map((theme) => (
+        {themes.map((themE) => (
           <button
-            key={theme.id}
-            onClick={() => setSelected(theme.id)}
+            key={themE.id}
+            onClick={() => handleSelectedTheme(themE.id)}
             className={cn(
               "rounded border p-3 relative hover:shadow-md transition group",
-              selected === theme.id && "border-primary ring-2 ring-primary/50"
+              theme === themE.id && "border-primary ring-2 ring-primary/50"
             )}
           >
             <div className="aspect-video relative">
               <Image
-                src={theme.image}
-                alt={theme.name}
+                src={themE.image}
+                alt={themE.name}
                 fill
                 className="object-cover rounded"
               />
               <div className="absolute top-2 left-2 z-10 bg-white hover:scale-110 rounded-full p-1 opacity-0 group-hover:opacity-100 transition">
-                <ZoomInIcon onClick={() => setPreviewImage(theme.image)} className="text-muted-foreground size-4" />
+                <ZoomInIcon
+                  onClick={() => setPreviewImage(themE.image)}
+                  className="text-muted-foreground size-4"
+                />
               </div>
             </div>
-            <div className="mt-3 font-medium text-center">{theme.name}</div>
-            {selected === theme.id && (
-              <CheckCircle2
-                
-                className="absolute top-2 right-2 text-primary bg-white rounded-full"
-              />
+            <div className="mt-3 font-medium text-center">{themE.name}</div>
+            {theme === themE.id && (
+              <CheckCircle2 className="absolute top-2 right-2 text-primary bg-white rounded-full" />
             )}
           </button>
         ))}
@@ -90,6 +97,9 @@ export default function Step4_ThemeSelection() {
           />
         </div>
       )}
+     {currentStepMetadata && <p className="text-sm text-muted-foreground text-right underline hover:text-primary cursor-pointer">
+        Bu adımı daha sonra tamamlamak için ileri butonuna basabilirsiniz.
+      </p>}
     </div>
   );
 }

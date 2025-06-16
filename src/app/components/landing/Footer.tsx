@@ -1,3 +1,4 @@
+'"use client";'
 import FadeInSection from "../ui/FadeInSection";
 
 export default function Footer() {

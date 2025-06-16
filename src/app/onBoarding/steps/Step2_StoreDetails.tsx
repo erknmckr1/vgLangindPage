@@ -1,31 +1,27 @@
 "use client";
-import { useState } from "react";
+import { ChangeEvent } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Select, SelectItem } from "@/components/ui/select";
-import { UploadDropzone } from "@/app/components/custom/UploadDropzone";
 import {
-  SelectValue,
+  Select,
+  SelectItem,
   SelectTrigger,
+  SelectValue,
   SelectContent,
 } from "@/components/ui/select";
-type Form = {
-  storeName: string;
-  slogan: string;
-  category: string;
-  bio: string;
-  logo: File | null;
-};
+import { UploadDropzone } from "@/app/components/custom/UploadDropzone";
 
-export default function Step2_StoreDetails() {
-  const [form, setForm] = useState<Form>({
-    storeName: "",
-    slogan: "",
-    category: "",
-    bio: "",
-    logo: null,
-  });
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/lib/redux/store";
+import { setField } from "@/lib/redux/slices/onBoarding.Slice";
+import { StepProps } from "@/app/types/onboardingPageTypes";
+
+export default function Step2_StoreDetails( {currentStepMetadata}:StepProps) {
+  const dispatch = useDispatch();
+  const { storeName, slogan, category, bio } = useSelector(
+    (state: RootState) => state.onBoarding
+  );
 
   const categories = [
     { id: "clothing", value: "clothing", label: "Giyim" },
@@ -36,13 +32,14 @@ export default function Step2_StoreDetails() {
   ];
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    dispatch(setField({ key: name as keyof RootState["onBoarding"], value }));
   };
 
   return (
-    <div className="space-y-5  p-4">
+    <div className="space-y-5 p-4">
       <h2 className="text-2xl font-semibold">Mağazanızı Tanımlayın</h2>
       <p className="text-muted-foreground">
         Mağaza isminizi, alanınızı ve kimliğinizi belirleyelim.
@@ -53,7 +50,7 @@ export default function Step2_StoreDetails() {
           <Label>Mağaza Adı</Label>
           <Input
             name="storeName"
-            value={form.storeName}
+            value={storeName}
             onChange={handleChange}
             className="py-3 mt-1"
           />
@@ -63,7 +60,7 @@ export default function Step2_StoreDetails() {
           <Label>Slogan</Label>
           <Input
             name="slogan"
-            value={form.slogan}
+            value={slogan}
             onChange={handleChange}
             placeholder="İsteğe bağlı"
             className="py-3 mt-1"
@@ -72,31 +69,31 @@ export default function Step2_StoreDetails() {
 
         <div>
           <Label>Kategori</Label>
-          {/* select */}
           <Select
-            value={form.category}
+            value={category}
             onValueChange={(value) =>
-              setForm((prev) => ({ ...prev, category: value }))
+              dispatch(setField({ key: "category", value }))
             }
           >
             <SelectTrigger className="w-full mt-1">
               <SelectValue placeholder="Kategori seçin" />
             </SelectTrigger>
-
             <SelectContent>
-              {categories.map((category) => (
-                <SelectItem key={category.value} value={category.value}>
-                  {category.label}
+              {categories.map((cat) => (
+                <SelectItem key={cat.id} value={cat.value}>
+                  {cat.label}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
-        {/* logo */}
+
         <div>
           <Label className="mb-1">Logo Yükle</Label>
           <UploadDropzone
-            onFileSelected={(file) => setForm({ ...form, logo: file })}
+            onFileSelected={(file) =>
+              dispatch(setField({ key: "logo", value: file }))
+            }
           />
         </div>
 
@@ -104,13 +101,16 @@ export default function Step2_StoreDetails() {
           <Label>Mağaza Açıklaması</Label>
           <Textarea
             name="bio"
-            value={form.bio}
+            value={bio}
             onChange={handleChange}
             placeholder="300 karaktere kadar mağaza açıklaması"
             className="h-28 mt-1"
           />
         </div>
       </div>
+      {currentStepMetadata && <p className="text-sm text-muted-foreground text-right underline hover:text-primary cursor-pointer">
+        Bu adımı daha sonra tamamlamak için ileri butonuna basabilirsiniz.
+      </p>}
     </div>
   );
 }
