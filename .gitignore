@@ -1,8 +1,41 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# ✅ GLOBAL NODE_MODULES (auth-service + frontend için)
+auth-service/node_modules/
+frontend/node_modules/
 
-# dependencies
-/node_modules
-/.pnp
+# ✅ BUILD DOSYALARI
+auth-service/dist/
+frontend/.next/
+frontend/out/
+build/
+
+# ✅ ENV DOSYALARI
+*.env
+*.env.*
+
+# ✅ LOG VE DEBUG DOSYALARI
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ✅ SYSTEM
+.DS_Store
+*.tsbuildinfo
+next-env.d.ts
+
+# ✅ DOCKER
+auth-service/.dockerignore
+frontend/.dockerignore
+
+# ✅ COVERAGE / TEST
+coverage/
+test-report/
+
+# ✅ VERCEL vs.
+.vercel
+.netlify
+
+# ✅ YARN
 .pnp.*
 .yarn/*
 !.yarn/patches
@@ -10,32 +43,6 @@
 !.yarn/releases
 !.yarn/versions
 
-# testing
-/coverage
-
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# misc
-.DS_Store
-*.pem
-
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-
-# env files (can opt-in for committing if needed)
-.env*
-
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+# ✅ IDE dosyaları (VSCode, JetBrains)
+.vscode/
+.idea/
