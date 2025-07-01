@@ -47,7 +47,7 @@ export class AuthController {
     @Body() loginUserDto: LoginUserDto, // ⇒ req.body
     @Res({ passthrough: true }) res: Response, // ⇒ res objesi
   ) {
-    const { accessToken, refreshToken } =
+    const { accessToken, refreshToken, userId } =
       await this.authService.loginUser(loginUserDto);
 
     // Cookie'lere token'ları ekleyelim
@@ -55,7 +55,7 @@ export class AuthController {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 1 * 60 * 1000,
+      maxAge: 15 * 60 * 1000,
     });
 
     res.cookie('refresh_token', refreshToken, {
@@ -67,6 +67,9 @@ export class AuthController {
     return {
       statusCode: 200,
       message: 'Giriş Başarılı',
+      data: {
+        userId,
+      },
     };
   }
 
@@ -122,6 +125,12 @@ export class AuthController {
 
     // 3. Cevap dön
     return { message: 'Çıkış başarılı.' };
+  }
+
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  getMe(@Req() req: Request) {
+    return req.user;
   }
   @Get('test')
   getTest() {

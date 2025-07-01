@@ -15,9 +15,9 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(configService: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
+        ExtractJwt.fromAuthHeaderAsBearerToken(), // ✅ Bearer desteği ekle
         (req: JwtRequest): string | null => {
-          console.log('TOKEN:', req.cookies.access_token);
-          return req.cookies.access_token ?? null;
+          return req.cookies?.access_token ?? null;
         },
       ]),
       ignoreExpiration: false,

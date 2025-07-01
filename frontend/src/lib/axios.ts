@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const instance = axios.create({
-  baseURL: "http://localhost:3000", // backend URL’in neyse onu yaz
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
   withCredentials: true, // refresh_token cookie olarak gönderilsin
 });
 
@@ -10,31 +10,31 @@ instance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    // Tarayıcı ortamında çalıştığını ve daha önce retry yapılmadığını kontrol et
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
-      !originalRequest.url.includes(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
-      )
+      typeof window !== "undefined" &&
+      document.cookie.includes("refresh_token") // refresh_token varsa
     ) {
       originalRequest._retry = true;
 
       try {
-        await instance.post(
-          `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh-token`,
-        ); // Cookie'den token alınacak
+        // refresh-token endpoint’ine istek at
+        await instance.post("/auth/refresh-token");
 
-        // Refresh başarılıysa orijinal isteği tekrar dene
+        // refresh başarılıysa orijinal isteği tekrar et
         return instance(originalRequest);
       } catch (refreshError) {
         console.error("Refresh işlemi başarısız:", refreshError);
-        // Logout veya yönlendirme işlemini burada tetikleyebilirsin
+
+        // Token yenilenemezse login sayfasına yönlendir
         window.location.href = "/login";
       }
     }
 
     return Promise.reject(error);
-  },
+  }
 );
 
 export default instance;

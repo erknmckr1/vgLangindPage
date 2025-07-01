@@ -13,6 +13,9 @@ import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { LoginUserDto } from 'src/users/dto/login-user.dto';
 import { UsersService } from 'src/users/users.service';
 import { NotFoundException } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
+import sendLogoutLog from './helper/log.helper';
 @Injectable()
 export class AuthService {
   constructor(
@@ -20,6 +23,7 @@ export class AuthService {
     private readonly userRepository: Repository<User>,
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService, // Nest'in sağladığı JwtService, JWT token oluşturmak ve doğrulamak için kullanılır.
+    private readonly httpService: HttpService,
   ) {}
 
   async register(createUserDto: CreateUserDto): Promise<any> {
@@ -69,7 +73,7 @@ export class AuthService {
 
   async loginUser(
     loginDto: LoginUserDto,
-  ): Promise<{ accessToken: string; refreshToken: string }> {
+  ): Promise<{ accessToken: string; refreshToken: string; userId: string }> {
     const { email, password } = loginDto;
 
     const user = await this.validateUser(email, password);
@@ -82,7 +86,7 @@ export class AuthService {
     // 1. Access token
     const accessToken = this.jwtService.sign(payload, {
       secret: process.env.JWT_ACCESS_SECRET,
-      expiresIn: '1m',
+      expiresIn: '15m',
     });
 
     // 2. Refresh token
@@ -98,7 +102,7 @@ export class AuthService {
       refreshToken: hashedRefreshToken,
     });
 
-    return { accessToken, refreshToken };
+    return { accessToken, refreshToken, userId: user.id };
   }
 
   async refreshTokens(
@@ -131,7 +135,7 @@ export class AuthService {
 
       const accessToken = this.jwtService.sign(newPayload, {
         secret: process.env.JWT_ACCESS_SECRET,
-        expiresIn: '1m',
+        expiresIn: '15m',
       });
 
       const newRefreshToken = this.jwtService.sign(newPayload, {
@@ -143,6 +147,11 @@ export class AuthService {
       const hashedNewRefreshToken = await bcrypt.hash(newRefreshToken, 10);
       user.refreshToken = hashedNewRefreshToken;
       await this.userRepository.save(user);
+
+      await sendLogoutLog({
+        httpService: this.httpService,
+        userId: payload.sub,
+      });
 
       return { accessToken, refreshToken: newRefreshToken };
     } catch (error) {
@@ -171,5 +180,19 @@ export class AuthService {
     }
 
     await this.usersService.update(userId, { refreshToken: null });
+
+    // log servisine logout gönder
+
+    try {
+      await firstValueFrom(
+        this.httpService.post(
+          `${process.env.LOG_API}/logs/logout`,
+          { userId, logoutAt: new Date() },
+          { timeout: 3000 },
+        ),
+      );
+    } catch (err) {
+      console.error('Logout log gönderilemedi:', err);
+    }
   }
 }

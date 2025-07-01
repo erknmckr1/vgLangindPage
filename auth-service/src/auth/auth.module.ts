@@ -9,7 +9,7 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { UsersModule } from 'src/users/user.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-
+import { HttpModule } from '@nestjs/axios';
 @Module({
   imports: [
     ConfigModule, // .env için gerekli
@@ -21,13 +21,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
         const secret = config.get<string>('JWT_ACCESS_SECRET');
-        console.log('JWT MODULE SECRET:', secret);
         return {
           secret,
           signOptions: { expiresIn: '1h' },
         };
       },
     }),
+    HttpModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, LocalStrategy, JwtStrategy],
