@@ -4,6 +4,7 @@ interface User {
   id: string;
   name: string;
   email: string;
+  isOnboardingCompleted: boolean;
   // diğer alanlar...
 }
 
@@ -23,7 +24,10 @@ export async function getCurrentUser(): Promise<User | null> {
       credentials: "include", // SSR'da güvenli cookie erişimi için
     });
 
-    if (!res.ok) return null;
+    if (!res.ok) {
+      console.error("Failed to fetch user info:", await res.text());
+      return null;
+    }
 
     const data = await res.json();
     return data;

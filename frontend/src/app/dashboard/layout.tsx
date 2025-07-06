@@ -8,10 +8,14 @@ export default async function DashboardLayout({
 }: {
   children: ReactNode;
 }) {
-  const user = await getCurrentUser(); //SSR
- 
+  const user = await getCurrentUser();
+
   if (!user) {
     redirect("/signin");
+  }
+
+  if (!user.isOnboardingCompleted) {
+    redirect("/onBoarding");
   }
 
   return (

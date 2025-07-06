@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import Step1_ProfileType from "./Step1_ProfileType";
 import Step2_StoreDetails from "./Step2_StoreDetails";
 import Step3_ProductType from "./Step3_ProductType";
@@ -9,6 +9,9 @@ import Step7_Preview from "./Step7_Preview";
 import { useStepValidation } from "../useStepValidation";
 import { onboardingSteps } from "../onboardingStepConfig";
 import { useState } from "react";
+import axios from "../../../lib/axios";
+import { useSelector } from "react-redux";
+import { RootState } from "src/lib/redux/store";
 
 const steps = [
   { id: 1, title: "Hesap Türü Seçimi", component: Step5_AccountTypeSelection },
@@ -25,11 +28,26 @@ const steps = [
 ];
 
 export default function OnboardingStepManager() {
+  const {
+    storeName,
+    slogan,
+    category,
+    bio,
+    productTypes,
+    theme,
+    accountType,
+    iban,
+    bankName,
+    taxId,
+    profileType,
+    invoiceTitle,
+  } = useSelector((state: RootState) => state.onBoarding);
+
   const [currentStep, setCurrentStep] = useState(0);
   const StepComponent = steps[currentStep].component;
   const isStepValid = useStepValidation(currentStep);
   const currentStepMetadata = onboardingSteps.find(
-    (s) => s.id === steps[currentStep].id,
+    (s) => s.id === steps[currentStep].id
   );
   if (!currentStepMetadata) return null; // veya default değer
   const totalSteps = steps.length;
@@ -44,6 +62,36 @@ export default function OnboardingStepManager() {
   const handleBack = () => {
     if (currentStep > 0) {
       setCurrentStep((prev) => prev - 1);
+    }
+  };
+
+  const handleCompletedOnboarding = async () => {
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_USER_URL}/onboarding/complete`,
+        {
+          storeName,
+          slogan,
+          category,
+          bio,
+          logo: "/uploads/logo.pdf",
+          productTypes,
+          theme,
+          accountType,
+          iban,
+          bankName,
+          taxId,
+          profileType,
+          invoiceTitle,
+        },
+        { withCredentials: true }
+      );
+
+      if (response.status === 200) {
+        window.location.href = "/dashboard/home";
+      }
+    } catch (err) {
+      console.log(err);
     }
   };
 
@@ -76,6 +124,7 @@ export default function OnboardingStepManager() {
 
       {/* STEP CONTROLS */}
       <div className="flex justify-between">
+        {/* Geri Butonu */}
         <button
           onClick={handleBack}
           disabled={currentStep === 0}
@@ -83,19 +132,29 @@ export default function OnboardingStepManager() {
         >
           Geri
         </button>
-        {isStepValid || currentStepMetadata.skippable ? (
+
+        {/* İleri Butonu (Step7 dışında ve valid ise) */}
+        {currentStepMetadata.component !== "Step7_Preview" && (
           <button
             onClick={handleNext}
-            className="px-4 py-2 bg-primary text-primary-foreground rounded"
+            disabled={!(isStepValid || currentStepMetadata.skippable)}
+            className={`px-4 py-2 rounded ${
+              isStepValid || currentStepMetadata.skippable
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground opacity-50 cursor-not-allowed"
+            }`}
           >
             İleri
           </button>
-        ) : (
+        )}
+
+        {/* Tamamla Butonu (Sadece Step7'de) */}
+        {currentStepMetadata.component === "Step7_Preview" && (
           <button
-            disabled
-            className="px-4 py-2 bg-muted text-muted-foreground rounded opacity-50"
+            onClick={() => handleCompletedOnboarding()}
+            className="px-4 py-2 bg-green-600 text-primary-foreground rounded"
           >
-            İleri
+            Tamamla
           </button>
         )}
       </div>

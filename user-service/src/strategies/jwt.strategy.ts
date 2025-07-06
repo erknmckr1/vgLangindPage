@@ -13,16 +13,17 @@ interface JwtRequest extends Request {
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(configService: ConfigService) {
+    const jwtSecret = configService.get<string>('JWT_ACCESS_SECRET') as string;
+
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
-        ExtractJwt.fromAuthHeaderAsBearerToken(), // ✅ Bearer desteği ekle
+        ExtractJwt.fromAuthHeaderAsBearerToken(),
         (req: JwtRequest): string | null => {
           return req.cookies?.access_token ?? null;
         },
       ]),
       ignoreExpiration: false,
-      secretOrKey:
-        configService.get<string>('JWT_ACCESS_SECRET') || 'default_secret',
+      secretOrKey: jwtSecret || 'default_secret',
     });
   }
 

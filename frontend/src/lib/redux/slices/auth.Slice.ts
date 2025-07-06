@@ -18,14 +18,14 @@ export const fetchCurrentUser = createAsyncThunk(
         `${process.env.NEXT_PUBLIC_API_URL}/auth/me`,
         {
           withCredentials: true,
-        }
+        },
       );
       return response.data;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       return rejectWithValue(err.response?.data || "Unknown error");
     }
-  }
+  },
 );
 
 interface AuthState {

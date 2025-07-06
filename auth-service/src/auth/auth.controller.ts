@@ -3,14 +3,12 @@ import {
   Controller,
   Post,
   HttpCode,
-  HttpStatus,
   Get,
   Res,
   Req,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { LoginUserDto } from 'src/users/dto/login-user.dto';
 import { Response, Request } from 'express';
 import { UnauthorizedException } from '@nestjs/common';
@@ -29,18 +27,6 @@ interface CustomRequest extends Request {
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('register')
-  @HttpCode(201)
-  async register(@Body() createUserDto: CreateUserDto) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const user = await this.authService.register(createUserDto);
-    return {
-      statusCode: HttpStatus.CREATED,
-      message: 'Kullanıcı başarıyla oluşturuldu',
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      data: user,
-    };
-  }
   @Post('login') // ⇒ Bu bir route decorator’ü. Aynı Express’teki app.post('/login') gibi çalışır.
   @HttpCode(200) // ⇒ HTTP yanıt kodunu override ediyor. Normalde 201 dönerdi.
   async login(
@@ -131,6 +117,31 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   getMe(@Req() req: Request) {
     return req.user;
+  }
+  @Post('hash-password')
+  async hashPassword(@Body('password') password: string) {
+    const hashed = await this.authService.hashPassword(password);
+    return { hashedPassword: hashed };
+  }
+
+  @Post('/token-after-register')
+  @HttpCode(200)
+  async generateTokensAfterRegister(
+    @Body()
+    userPayload: {
+      userId: string;
+      email: string;
+      isOnboardingCompleted: boolean;
+    },
+  ) {
+    const { accessToken, refreshToken } =
+      await this.authService.generateTokens(userPayload);
+
+    return {
+      message: 'Tokenlar oluşturuldu ve cookie yazıldı.',
+      accessToken,
+      refreshToken,
+    };
   }
   @Get('test')
   getTest() {

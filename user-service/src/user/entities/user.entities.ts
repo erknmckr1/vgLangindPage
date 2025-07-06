@@ -7,10 +7,12 @@ import {
   OneToMany,
   OneToOne,
 } from 'typeorm';
-import { StoreProfile } from 'src/users/entities/store-profile.entities';
-import { ProductType } from 'src/users/entities/product-type.entity';
-import { BillingInfo } from 'src/users/entities/billing-info.entity';
-@Entity('users') // tablo adı
+import { StoreProfile } from './store-profile.entities';
+import { ProductType } from './product-type.entity';
+import { BillingInfo } from './billing-info.entity';
+import { Theme } from './theme.entity';
+
+@Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -36,17 +38,32 @@ export class User {
   @Column({ default: false })
   isOnboardingCompleted: boolean;
 
+  @Column({ default: 1 })
+  onboardingStep: number;
+
+  @Column({ default: 'pending' })
+  onboardingStatus: 'pending' | 'in_progress' | 'completed';
+
+  @Column({ nullable: true })
+  accountType: 'individual' | 'corporate'; // Step 1
+
+  @Column({ nullable: true })
+  profileType: 'product' | 'service'; // Step 2
+
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToOne(() => StoreProfile, (profile) => profile.user)
+  @OneToOne(() => StoreProfile, (profile) => profile.user, { nullable: true })
   storeProfile: StoreProfile;
 
   @OneToMany(() => ProductType, (pt) => pt.user)
   productTypes: ProductType[];
+
+  @OneToOne(() => Theme, (theme) => theme.user, { nullable: true })
+  theme: Theme;
 
   @OneToMany(() => BillingInfo, (billingInfo) => billingInfo.user, {
     cascade: true,

@@ -5,8 +5,12 @@ import SignInForm from "./signInForm/SignInForm";
 export default async function SignInPage() {
   const user = await getCurrentUser();
 
-  if (user) {
+  if (user?.isOnboardingCompleted) {
     redirect("/dashboard/home");
+  }
+
+  if (user && !user.isOnboardingCompleted) {
+    redirect("/onBoarding");
   }
 
   return <SignInForm />;

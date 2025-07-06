@@ -3,10 +3,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
-import { User } from './users/entities/user.entities';
-import { StoreProfile } from './users/entities/store-profile.entities';
-import { BillingInfo } from './users/entities/billing-info.entity';
-import { ProductType } from './users/entities/product-type.entity';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
@@ -18,12 +14,12 @@ import { ConfigModule } from '@nestjs/config';
       username: 'postgres',
       password: 'Erkan3402.',
       database: 'auth_db',
-      entities: [User, StoreProfile, BillingInfo, ProductType], // Entity dosyasını doğrudan burada gösteriyoruz
+      entities: [], // Entity dosyasını doğrudan burada gösteriyoruz
       synchronize: true, // İlk testler için true. Prod'da false olacak.
     }),
     AuthModule,
     ConfigModule.forRoot({
-      isGlobal: true, // 🔥 Her yerden erişilebilsin diye
+      isGlobal: true, // Her yerden erişilebilsin diye
       envFilePath: '.env', // Eğer `.env.development` kullandıysan buraya onu yaz
     }),
   ],

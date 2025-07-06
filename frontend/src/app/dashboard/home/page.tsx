@@ -62,12 +62,12 @@ export default function DashboardHome() {
               Bugünkü özet aşağıda seni bekliyor.
             </p>
             <p className="text-sm text-muted-foreground">
-              {new Date().toLocaleDateString("tr-TR", {
+              {/* {new Date().toLocaleDateString("tr-TR", {
                 weekday: "long",
                 year: "numeric",
                 month: "long",
                 day: "numeric",
-              })}
+              })} */}
             </p>
             <p className="text-xs text-muted-foreground">
               İstanbul, 24°C Güneşli

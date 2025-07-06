@@ -1,6 +1,6 @@
 // src/users/entities/billing-info.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { User } from 'src/users/entities/user.entities';
+import { User } from './user.entities';
 
 @Entity('billing_infos')
 export class BillingInfo {

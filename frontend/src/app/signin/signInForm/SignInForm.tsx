@@ -29,12 +29,12 @@ export default function SignInForm() {
         formData,
         {
           withCredentials: true,
-        }
+        },
       );
       if (response.status === 200) {
         const userAgent = navigator.userAgent;
         await axios.post(`${process.env.NEXT_PUBLIC_API_LOG_URL}/logs/login`, {
-          userId: response?.data.data.userId, // TODO: login cevabına eklersen gerçek ID olur
+          userId: response?.data.data.userId,
           userAgent,
         });
         router.push("/dashboard/home");

@@ -30,8 +30,9 @@ export default function SignUpPage() {
     e.preventDefault();
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/register`,
+        `${process.env.NEXT_PUBLIC_API_USER_URL}/users/register`,
         formData,
+        { withCredentials: true },
       );
       if (response.status === 201) {
         router.push("/onBoarding");
