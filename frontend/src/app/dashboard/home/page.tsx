@@ -8,10 +8,12 @@ import {
   Sparkles,
   Bell,
 } from "lucide-react";
+import { useSelector } from "react-redux";
 import FadeInSection from "../../components/ui/FadeInSection";
 import RecentOrders from "./components/RecentOrders";
 import StockAlerts from "./components/StockAlert";
 import ProductPerformanceSummary from "./components/ProductPerformanceSummary";
+import { RootState } from "src/lib/redux/store";
 const statCardsProps = [
   {
     title: "Toplam Ürün",
@@ -46,6 +48,7 @@ const statCardsProps = [
 ];
 
 export default function DashboardHome() {
+  const { name } = useSelector((state: RootState) => state.userInfo);
   return (
     <div className="lg:p-6">
       <FadeInSection>
@@ -54,7 +57,7 @@ export default function DashboardHome() {
           {/* USER INFO */}
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <h2 className="text-2xl font-bold">{`Hoş geldiniz, !`}</h2>
+              <h2 className="text-2xl font-bold">{`Hoş geldiniz,${name} !`}</h2>
               <Sparkles className="w-6 h-6 text-yellow-400 animate-pulse" />
             </div>
             <p className="text-sm text-muted-foreground">

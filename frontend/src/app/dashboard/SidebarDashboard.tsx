@@ -11,8 +11,10 @@ import {
   CornerUpLeft,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-
+import { useSelector } from "react-redux";
+import { RootState } from "src/lib/redux/store";
 export default function SidebarDashboard() {
+  const { name } = useSelector((state: RootState) => state.userInfo);
   const pathname = usePathname();
   const router = useRouter();
   const logout = async () => {
@@ -92,7 +94,7 @@ export default function SidebarDashboard() {
         <div className="w-10 h-10 bg-black rounded-full mb-4" />
 
         {/* Kullanıcı adı - sadece geniş ekranlarda görünür */}
-        <span className="text-sm font-medium hidden lg:inline mb-4"></span>
+        <span className="text-sm font-medium hidden lg:inline mb-4">{`${name}`}</span>
 
         {/* Menü */}
         {sidebarItems.map((item) =>
