@@ -1,63 +1,25 @@
-// components/PaymentSettingsForm.tsx
-
+// 📁 PaymentSettingsForm.tsx
 "use client";
-import { Input } from "../../../../components/ui/input";
-import { Label } from "../../../../components/ui/label";
-import { Button } from "../../../../components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../../../components/ui/select";
-
+import { useState } from "react";
+import BillingForm from "src/features/settings/billing-info/CreateBillingForm";
+import BillingAccountList from "src/features/settings/billing-info/BillingAccountList";
+import { useSelector } from "react-redux";
+import { RootState } from "src/lib/redux/store";
 export default function PaymentSettingsForm() {
+  const [selectedPrimary, setSelectedPrimary] = useState<string | null>(null);
+  const { billingInfo } = useSelector((state: RootState) => state.billingInfo);
   return (
-    <div className="space-y-6 border p-6 rounded-lg shadow bg-background h-[450px]">
-      <div>
-        <h2 className="text-xl font-semibold">Ödeme Ayarları</h2>
-        <p className="text-sm text-muted-foreground">
-          Mağazanız için ödeme bilgilerini aşağıdan belirleyin.
-        </p>
+    <div className="flex gap-8 border p-6 rounded-lg shadow bg-background h-[500px] overflow-y-auto">
+      <div className="w-1/2">
+        <BillingForm />
       </div>
-
-      <form className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="bank">Banka Adı</Label>
-          <Select>
-            <SelectTrigger>
-              <SelectValue placeholder="Banka Seçin" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ziraat">Ziraat Bankası</SelectItem>
-              <SelectItem value="isbank">İş Bankası</SelectItem>
-              <SelectItem value="garanti">Garanti BBVA</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="iban">IBAN Numarası</Label>
-          <Input id="iban" placeholder="TR00 0000 0000 0000 0000 00" />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="accountName">Hesap Sahibi</Label>
-          <Input id="accountName" placeholder="Ad Soyad" />
-        </div>
-
-        <div className="space-y-2">
-          <Label>Ödeme Sağlayıcı</Label>
-          <Input
-            value="PayTR (yakında)"
-            readOnly
-            className="bg-muted cursor-not-allowed"
-          />
-        </div>
-
-        <Button type="submit">Kaydet</Button>
-      </form>
+      <div className="w-1/2">
+        <BillingAccountList
+          accounts={billingInfo || []}
+          selectedPrimary={selectedPrimary}
+          onPrimaryChange={(iban) => setSelectedPrimary(iban)}
+        />
+      </div>
     </div>
   );
 }

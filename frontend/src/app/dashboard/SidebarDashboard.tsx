@@ -15,7 +15,6 @@ import { useRouter } from "next/navigation";
 export default function SidebarDashboard() {
   const pathname = usePathname();
   const router = useRouter();
-
   const logout = async () => {
     try {
       const response = await axios.post(
@@ -23,7 +22,7 @@ export default function SidebarDashboard() {
         {},
         {
           withCredentials: true,
-        },
+        }
       );
       if (response.status === 200) {
         console.log("Logout successful:", response.data.message);
@@ -86,16 +85,14 @@ export default function SidebarDashboard() {
     <aside
       className={cn(
         "fixed top-0 left-0 h-full border-r bg-muted text-muted-foreground transition-all duration-300",
-        "w-[72px] lg:w-[240px] p-4",
+        "w-[72px] lg:w-[240px] p-4"
       )}
     >
       <nav className="flex flex-col gap-2 items-center lg:items-start">
         <div className="w-10 h-10 bg-black rounded-full mb-4" />
 
         {/* Kullanıcı adı - sadece geniş ekranlarda görünür */}
-        <span className="text-sm font-medium hidden lg:inline mb-4">
-          Erkan Mustafa Çakir
-        </span>
+        <span className="text-sm font-medium hidden lg:inline mb-4"></span>
 
         {/* Menü */}
         {sidebarItems.map((item) =>
@@ -104,7 +101,7 @@ export default function SidebarDashboard() {
               key={item.href}
               onClick={item.onClick}
               className={cn(
-                "flex items-center gap-3 px-3 py-2 rounded-md transition-colors duration-200 text-sm w-full justify-center lg:justify-start hover:bg-primary/10 hover:text-primary",
+                "flex items-center gap-3 px-3 py-2 rounded-md transition-colors duration-200 text-sm w-full justify-center lg:justify-start hover:bg-primary/10 hover:text-primary"
               )}
             >
               {item.icon}
@@ -116,17 +113,16 @@ export default function SidebarDashboard() {
               href={item.href}
               className={cn(
                 "flex items-center gap-3 px-3 py-2 rounded-md transition-colors duration-200 text-sm w-full justify-center lg:justify-start hover:bg-primary/10 hover:text-primary",
-                pathname === item.href && "bg-accent text-primary font-medium",
+                pathname === item.href && "bg-accent text-primary font-medium"
               )}
               onClick={() => {
                 item.onClick?.();
-                console.log(`Navigating to: ${item.href}`);
               }}
             >
               {item.icon}
               <span className="hidden lg:inline">{item.label}</span>
             </Link>
-          ),
+          )
         )}
       </nav>
     </aside>

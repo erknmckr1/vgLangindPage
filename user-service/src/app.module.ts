@@ -11,6 +11,9 @@ import { OnboardingModule } from './onboarding/onboarding.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtAuthGuard } from './strategies/jwt-auth.guard';
 import { ConfigModule } from '@nestjs/config';
+import { ThemeModule } from './user/user-theme/theme.module';
+import { StoreProfileModule } from './user/store-profile/store-profile.module';
+import { BillingInfoModule } from './user/billing-info/billing-info.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -27,6 +30,9 @@ import { ConfigModule } from '@nestjs/config';
     }),
     UserModule,
     OnboardingModule,
+    BillingInfoModule,
+    StoreProfileModule,
+    ThemeModule,
   ],
   providers: [JwtStrategy, JwtAuthGuard],
 })

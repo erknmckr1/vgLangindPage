@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setField } from "../../../lib/redux/slices/onBoarding.Slice";
 import { RootState } from "../../../lib/redux/store";
 import type { OnboardingState } from "../../../lib/redux/slices/onBoarding.Slice";
-import { StepProps } from "../../types/onboardingPageTypes";
+import { StepProps } from "../types/onboardingPageTypes";
 export default function Step6_PaymentSetting({
   currentStepMetadata,
 }: StepProps) {

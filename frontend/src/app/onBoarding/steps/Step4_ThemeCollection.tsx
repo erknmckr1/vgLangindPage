@@ -8,7 +8,7 @@ import { cn } from "../../../lib/utils";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../lib/redux/store";
 import { setField } from "../../../lib/redux/slices/onBoarding.Slice";
-import { StepProps } from "../../types/onboardingPageTypes";
+import { StepProps } from "../types/onboardingPageTypes";
 
 const themes = [
   {

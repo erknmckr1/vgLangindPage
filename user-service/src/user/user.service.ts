@@ -7,6 +7,7 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { Observable } from 'rxjs';
 import { Response } from 'express';
+import { NotFoundException } from '@nestjs/common';
 @Injectable()
 export class UserService {
   constructor(
@@ -90,5 +91,30 @@ export class UserService {
     });
 
     return savedUser;
+  }
+
+  async getUserInfo(userId: string) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        phone: true,
+        storeName: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+
+    return {
+      id: user?.id,
+      email: user?.email,
+      name: user?.name,
+      phone: user?.phone,
+      storeName: user.storeName,
+    };
   }
 }

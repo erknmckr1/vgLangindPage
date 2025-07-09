@@ -47,7 +47,7 @@ export default function OnboardingStepManager() {
   const StepComponent = steps[currentStep].component;
   const isStepValid = useStepValidation(currentStep);
   const currentStepMetadata = onboardingSteps.find(
-    (s) => s.id === steps[currentStep].id
+    (s) => s.id === steps[currentStep].id,
   );
   if (!currentStepMetadata) return null; // veya default değer
   const totalSteps = steps.length;
@@ -84,7 +84,7 @@ export default function OnboardingStepManager() {
           profileType,
           invoiceTitle,
         },
-        { withCredentials: true }
+        { withCredentials: true },
       );
 
       if (response.status === 200) {

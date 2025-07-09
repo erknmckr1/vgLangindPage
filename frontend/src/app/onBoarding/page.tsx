@@ -4,7 +4,7 @@ import { getCurrentUser } from "src/lib/helper/auth";
 
 export default async function OnBoardingPage() {
   const user = await getCurrentUser();
-  console.log(user)
+  console.log(user);
   if (!user) {
     redirect("/signin");
   }

@@ -5,7 +5,7 @@ import { CheckCircle2 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { setField } from "../../../lib/redux/slices/onBoarding.Slice";
 import { RootState } from "../../../lib/redux/store";
-import { StepProps } from "../../types/onboardingPageTypes";
+import { StepProps } from "../types/onboardingPageTypes";
 const productOptions = [
   {
     id: "physical",

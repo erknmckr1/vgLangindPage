@@ -29,7 +29,7 @@ instance.interceptors.response.use(
         console.error("Refresh işlemi başarısız:", refreshError);
 
         // Token yenilenemezse login sayfasına yönlendir
-        window.location.href = "/login";
+        window.location.href = "/signin";
       }
     }
 

@@ -15,12 +15,12 @@ import { UploadDropzone } from "../../components/custom/UploadDropzone";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../lib/redux/store";
 import { setField } from "../../../lib/redux/slices/onBoarding.Slice";
-import { StepProps } from "../../types/onboardingPageTypes";
+import { StepProps } from "../types/onboardingPageTypes";
 
 export default function Step2_StoreDetails({ currentStepMetadata }: StepProps) {
   const dispatch = useDispatch();
   const { storeName, slogan, category, bio } = useSelector(
-    (state: RootState) => state.onBoarding,
+    (state: RootState) => state.onBoarding
   );
 
   const categories = [
@@ -32,7 +32,7 @@ export default function Step2_StoreDetails({ currentStepMetadata }: StepProps) {
   ];
 
   const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
     dispatch(setField({ key: name as keyof RootState["onBoarding"], value }));
