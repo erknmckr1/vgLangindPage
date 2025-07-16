@@ -1,5 +1,5 @@
 "use client";
-import { ChangeEvent } from "react";
+import { OnboardingState } from "../../../lib/redux/slices/onBoarding.Slice";
 import { Input } from "../../../components/ui/input";
 import { Textarea } from "../../../components/ui/textarea";
 import { Label } from "../../../components/ui/label";
@@ -11,7 +11,9 @@ import {
   SelectContent,
 } from "../../../components/ui/select";
 import { UploadDropzone } from "../../components/custom/UploadDropzone";
-
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Step2Schema, Step2Data } from "../validation/store-details.schema";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../lib/redux/store";
 import { setField } from "../../../lib/redux/slices/onBoarding.Slice";
@@ -23,6 +25,22 @@ export default function Step2_StoreDetails({ currentStepMetadata }: StepProps) {
     (state: RootState) => state.onBoarding
   );
 
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<Step2Data>({
+    resolver: zodResolver(Step2Schema),
+    defaultValues: {
+      storeName,
+      slogan,
+      category,
+      bio,
+    },
+    mode: "onChange",
+  });
+
   const categories = [
     { id: "clothing", value: "clothing", label: "Giyim" },
     { id: "jewelry", value: "jewelry", label: "Takı" },
@@ -31,11 +49,18 @@ export default function Step2_StoreDetails({ currentStepMetadata }: StepProps) {
     { id: "other", value: "other", label: "Diğer" },
   ];
 
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    dispatch(setField({ key: name as keyof RootState["onBoarding"], value }));
+  console.log(storeName, slogan, category, bio);
+
+  const onSubmit = (data: Step2Data) => {
+    // Valid ise Redux'a yaz
+    Object.entries(data).forEach(([key, value]) => {
+      dispatch(
+        setField({
+          key: key as keyof OnboardingState,
+          value,
+        })
+      );
+    });
   };
 
   return (
@@ -45,35 +70,34 @@ export default function Step2_StoreDetails({ currentStepMetadata }: StepProps) {
         Mağaza isminizi, alanınızı ve kimliğinizi belirleyelim.
       </p>
 
-      <div className="grid gap-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
         <div>
           <Label>Mağaza Adı</Label>
-          <Input
-            name="storeName"
-            value={storeName}
-            onChange={handleChange}
-            className="py-3 mt-1"
-          />
+          <Input {...register("storeName")} className="py-3 mt-1" />
+          {errors.storeName && (
+            <p className="text-red-500 text-sm">{errors.storeName.message}</p>
+          )}
         </div>
 
         <div>
           <Label>Slogan</Label>
           <Input
-            name="slogan"
-            value={slogan}
-            onChange={handleChange}
+            {...register("slogan")}
             placeholder="İsteğe bağlı"
             className="py-3 mt-1"
           />
+          {errors.slogan && (
+            <p className="text-red-500 text-sm">{errors.slogan.message}</p>
+          )}
         </div>
-
         <div>
           <Label>Kategori</Label>
           <Select
-            value={category}
-            onValueChange={(value) =>
-              dispatch(setField({ key: "category", value }))
-            }
+            defaultValue={category}
+            onValueChange={(value) => {
+              setValue("category", value); // ✅ react-hook-form'a yaz
+              dispatch(setField({ key: "category", value })); // ✅ Redux'a yaz
+            }}
           >
             <SelectTrigger className="w-full mt-1">
               <SelectValue placeholder="Kategori seçin" />
@@ -91,8 +115,8 @@ export default function Step2_StoreDetails({ currentStepMetadata }: StepProps) {
         <div>
           <Label className="mb-1">Logo Yükle</Label>
           <UploadDropzone
-            onFileSelected={(file) =>
-              dispatch(setField({ key: "logo", value: file }))
+            onFileSelected={() =>
+              dispatch(setField({ key: "logo", value: 'file' }))
             }
           />
         </div>
@@ -100,14 +124,15 @@ export default function Step2_StoreDetails({ currentStepMetadata }: StepProps) {
         <div>
           <Label>Mağaza Açıklaması</Label>
           <Textarea
-            name="bio"
-            value={bio}
-            onChange={handleChange}
+            {...register("bio")}
             placeholder="300 karaktere kadar mağaza açıklaması"
             className="h-28 mt-1"
           />
+          {errors.bio && (
+            <p className="text-red-500 text-sm">{errors.bio.message}</p>
+          )}
         </div>
-      </div>
+      </form>
       {currentStepMetadata && (
         <p className="text-sm text-muted-foreground text-right underline hover:text-primary cursor-pointer">
           Bu adımı daha sonra tamamlamak için ileri butonuna basabilirsiniz.

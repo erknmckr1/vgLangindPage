@@ -1,6 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  SignUpSchema,
+  SignUpFormData,
+} from "src/app/validations/signup/signup.schema";
+
 import { Input } from "../../../components/ui/input";
 import {
   Tooltip,
@@ -11,34 +17,43 @@ import {
 import { Info } from "lucide-react";
 import { Checkbox } from "../../../components/ui/checkbox";
 import { useRouter } from "next/navigation";
-import axios from "../../../lib/axios";
+import axiosInstance from "../../../lib/axios";
+import axios from "axios";
 export default function SignUpPage() {
   const router = useRouter();
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    storeName: "",
-    phone: "",
+
+  //  RHF + Zod entegrasyonu
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors },
+  } = useForm<SignUpFormData>({
+    resolver: zodResolver(SignUpSchema),
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  //  RHF submit
+  const onSubmit = async (formData: SignUpFormData) => {
     try {
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${process.env.NEXT_PUBLIC_API_USER_URL}/users/register`,
         formData,
-        { withCredentials: true },
+        { withCredentials: true }
       );
       if (response.status === 201) {
         router.push("/onBoarding");
       }
-    } catch (err) {
-      console.log(err);
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        const data = err.response?.data;
+        // Backend'ten field + message gelmişse
+        if (data?.field && data?.message) {
+          setError(data.field as keyof SignUpFormData, {
+            type: "server",
+            message: data.message,
+          });
+        }
+      }
     }
   };
 
@@ -59,7 +74,7 @@ export default function SignUpPage() {
       label: "Cep Telefonu",
       name: "phone",
       type: "text",
-      placeholder: "ornek@mail.com",
+      placeholder: "05XXXXXXXXX",
     },
     {
       label: "E-posta",
@@ -78,24 +93,24 @@ export default function SignUpPage() {
   return (
     <main className="min-h-[calc(100vh-73px)] flex items-center justify-center bg-background text-foreground">
       <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-md bg-muted text-foreground p-6 rounded-radius  ]"
+        onSubmit={handleSubmit(onSubmit)}
+        className="w-full max-w-md bg-muted text-foreground p-6 rounded-radius"
       >
-        <div className="w-full">
-          <h2 className="text-2xl font-extrabold text-primary tracking-tight">
-            Vega
-          </h2>
-          <h2 className="text-2xl font-semibold mb-3 text-center text-foreground">
-            Hesap Oluştur
-          </h2>
-        </div>
+        <h2 className="text-2xl font-extrabold text-primary tracking-tight">
+          Vega
+        </h2>
+        <h2 className="text-2xl font-semibold mb-3 text-center">
+          Hesap Oluştur
+        </h2>
+
         <p className="text-muted-foreground">
           10 Günlük deneme sürümünüzü başlatın
         </p>
         <p className="text-xs py-4 text-muted-foreground">
           Dakikalar içerisinde kişisel mağazanızı oluşturup satış yapmaya
-          başlayın...{" "}
+          başlayın...
         </p>
+
         {formFields.map((field) => (
           <div className="mb-4" key={field.name}>
             <div className="flex items-center justify-between mb-1">
@@ -118,30 +133,33 @@ export default function SignUpPage() {
                 </TooltipProvider>
               )}
             </div>
+
             <Input
               type={field.type}
-              name={field.name}
               placeholder={field.placeholder}
-              onChange={handleChange}
-              required
+              {...register(field.name as keyof SignUpFormData)}
               className="w-full p-4 h-[50px] rounded border border-border bg-muted text-muted-foreground"
             />
+            {errors[field.name as keyof SignUpFormData] && (
+              <p className="text-xs text-red-500 mt-1">
+                {errors[
+                  field.name as keyof SignUpFormData
+                ]?.message?.toString()}
+              </p>
+            )}
           </div>
         ))}
-        <div className="w-full flex flex-col gap-y-4">
+
+        <div className="w-full flex flex-col gap-y-4 mt-2">
           <p>
-            <Checkbox />{" "}
+            <Checkbox id="agreement" />{" "}
             <span className="text-xs">
-              {'Vega Üyelik Sözleşmesi"ni kabul edliyorum.'}
+              Vega Üyelik Sözleşmesini kabul ediyorum.
             </span>
           </p>
           <p>
-            <Checkbox />{" "}
-            <span className="text-xs">
-              {
-                "Kişisel Verilerin Korunmasına İlişkin Aydınlatma Metni’ni okudum."
-              }
-            </span>
+            <Checkbox id="kvkk" />{" "}
+            <span className="text-xs">KVKK Aydınlatma Metni’ni okudum.</span>
           </p>
         </div>
 

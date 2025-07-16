@@ -32,13 +32,20 @@ export class AuthService {
       );
       user = response.data;
     } catch (error: unknown) {
-      throw new UnauthorizedException(error);
+      console.log(error);
+      throw new UnauthorizedException({
+        field: 'email',
+        message: 'Girdiğiniz email ile kullanıcı kaydı yok.',
+      });
     }
 
     // 2. Şifreyi kontrol et
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      throw new UnauthorizedException('Email veya şifre hatalı.');
+      throw new UnauthorizedException({
+        field: 'password',
+        message: 'Hatalı şifre',
+      });
     }
 
     const payload = {

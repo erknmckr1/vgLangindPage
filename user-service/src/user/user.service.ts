@@ -19,18 +19,34 @@ export class UserService {
   async register(createUserDto: CreateUserDto, res: Response): Promise<User> {
     const { password, ...rest } = createUserDto;
 
-    const existing = await this.userRepository.findOne({
-      where: [
-        { email: createUserDto.email },
-        { phone: createUserDto.phone },
-        { storeName: createUserDto.storeName },
-      ],
+    const emailExists = await this.userRepository.findOne({
+      where: { email: createUserDto.email },
     });
+    if (emailExists) {
+      throw new BadRequestException({
+        field: 'email',
+        message: 'Bu e-posta zaten kullanılıyor.',
+      });
+    }
 
-    if (existing) {
-      throw new BadRequestException(
-        'Bu e-posta, telefon veya mağaza adı zaten kullanılıyor.',
-      );
+    const phoneExists = await this.userRepository.findOne({
+      where: { phone: createUserDto.phone },
+    });
+    if (phoneExists) {
+      throw new BadRequestException({
+        field: 'phone',
+        message: 'Bu telefon numarası zaten kullanılıyor.',
+      });
+    }
+
+    const storeExists = await this.userRepository.findOne({
+      where: { storeName: createUserDto.storeName },
+    });
+    if (storeExists) {
+      throw new BadRequestException({
+        field: 'storeName',
+        message: 'Bu mağaza adı zaten kullanılıyor.',
+      });
     }
 
     let hashedPassword: string;
