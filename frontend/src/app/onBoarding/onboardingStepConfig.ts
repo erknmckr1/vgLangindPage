@@ -39,7 +39,7 @@ export const onboardingSteps = [
     id: 6,
     title: "Ödeme ve Fatura Bilgileri",
     fields: ["iban", "bankName", "taxId", "invoiceTitle"],
-    skippable: true,
+    skippable: false,
     component: "Step6_PaymentSetting",
   },
   {

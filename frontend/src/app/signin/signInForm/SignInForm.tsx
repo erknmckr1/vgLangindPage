@@ -1,46 +1,63 @@
 "use client";
 
 import { Input } from "src/components/ui/input";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  SignInSchema,
+  SignInFormData,
+} from "src/app/validations/singin/signin.schema";
 import { Label } from "@radix-ui/react-label";
 import { Button } from "src/components/ui/button";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import axios from "src/lib/axios";
+import axiosInstance from "src/lib/axios";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 export default function SignInForm() {
-  const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
-  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors },
+  } = useForm<SignInFormData>({
+    resolver: zodResolver(SignInSchema),
+  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (formData: SignInFormData) => {
     try {
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
         formData,
         {
           withCredentials: true,
-        },
+        }
       );
       if (response.status === 200) {
         const userAgent = navigator.userAgent;
-        await axios.post(`${process.env.NEXT_PUBLIC_API_LOG_URL}/logs/login`, {
-          userId: response?.data.data.userId,
-          userAgent,
-        });
+        await axiosInstance.post(
+          `${process.env.NEXT_PUBLIC_API_LOG_URL}/logs/login`,
+          {
+            userId: response?.data.data.userId,
+            userAgent,
+          }
+        );
         router.push("/dashboard/home");
       }
-    } catch (err) {
-      console.log(err);
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        const data = err.response?.data;
+        if (data?.field && data?.message) {
+          setError(data.field as keyof SignInFormData, {
+            type: "server",
+            message: data.message,
+          });
+        }
+      }
     }
   };
 
@@ -57,31 +74,30 @@ export default function SignInForm() {
             Hesabınıza erişmek için giriş yapın
           </p>
         </div>
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
-              name="email"
               type="email"
               placeholder="ornek@mail.com"
               className="py-4"
-              value={formData.email}
-              onChange={handleFormChange}
-              required
+              {...register("email")}
             />
+            {errors.email && (
+              <p className="text-xs text-red-500 mt-1">
+                {errors.email.message}
+              </p>
+            )}
           </div>
           <div className="space-y-2 relative">
             <Label htmlFor="password">Şifre</Label>
             <Input
               id="password"
-              name="password"
               type={showPassword ? "text" : "password"}
               className="py-4 pr-10"
               placeholder="••••••••"
-              value={formData.password}
-              onChange={handleFormChange}
-              required
+              {...register("password")}
             />
             <button
               type="button"
@@ -90,6 +106,11 @@ export default function SignInForm() {
             >
               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
+            {errors.password && (
+              <p className="text-xs text-red-500 mt-1">
+                {errors.password.message}
+              </p>
+            )}
           </div>
           <Button
             type="submit"
